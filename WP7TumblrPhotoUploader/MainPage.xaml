@@ -23,12 +23,12 @@
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock x:Name="ApplicationTitle" Text="TUMBLR" Style="{StaticResource PhoneTextNormalStyle}"/>
-            <TextBlock x:Name="PageTitle" Text="Upload Photo" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock x:Name="PageTitle" Text="upload photo" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <Image Height="261" HorizontalAlignment="Center" Name="photoPreview" Stretch="None" VerticalAlignment="Top" Width="456" Source="/WP7TumblrPhotoUploader;component/Images/photo_icon.png" Margin="0,70,0,0" />
+            <Image Height="261" HorizontalAlignment="Center" Name="photoPreview" Stretch="None" VerticalAlignment="Top" Width="456" Source="/WP7TumblrPhotoUploader;component/Images/photo_icon.png" Margin="0,70,0,0" MouseLeftButtonDown="photoPreview_MouseLeftButtonDown" />
             <TextBox Height="262" Margin="0,267,0,6" Name="captionTextbox" Text="Enter a caption..." Foreground="#55000000" TextAlignment="Center" ManipulationStarted="captionTextbox_ManipulationStarted" LostFocus="captionTextbox_LostFocus" />
         </Grid>
     </Grid>
