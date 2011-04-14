@@ -107,5 +107,13 @@ namespace WP7TumblrPhotoUploader
                 this.photoPreview.SetValue(Canvas.MarginProperty, new Thickness(0, 0, 0, 0));
             }
         }
+
+        /**
+         * Display the account settings page
+         **/
+        private void accountSettings_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/AccountSettingsPage.xaml", UriKind.Relative));
+        }
     }
 }
