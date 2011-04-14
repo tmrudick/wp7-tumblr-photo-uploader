@@ -11,8 +11,13 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     mc:Ignorable="d" d:DesignHeight="696" d:DesignWidth="480"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="True" xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls">
 
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="UnselectedOptionBrush" Color="#64FFFFFF" />
+        <SolidColorBrush x:Key="SelectedOptionBrush" Color="#FFFFFF" />
+    </UserControl.Resources>
+    
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
@@ -26,7 +31,19 @@
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0"></Grid>
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <TextBlock Height="117" HorizontalAlignment="Left" Name="basicTextBlock" Text="Basic" VerticalAlignment="Top" FontSize="80" Width="190" Margin="9,0,0,0" MouseLeftButtonDown="Basic_Click" />
+            <TextBlock FontSize="80" Height="117" HorizontalAlignment="Left" Margin="216,0,0,0" Name="oauthTextBlock" Text="OAuth" VerticalAlignment="Top" Width="234" Foreground="#64FFFFFF" MouseLeftButtonDown="OAuth_Click" />
+        </Grid>
+        <Canvas Height="100" Margin="21,123,18,0" Name="oauthCanvas" VerticalAlignment="Top" Grid.Row="1" Visibility="Collapsed">
+            <Button Canvas.Left="37" Canvas.Top="13" Content="Get OAuth Tokens" Height="87" Name="oAuthButton" Width="382" />
+        </Canvas>
+        <Canvas Height="255" HorizontalAlignment="Left" Margin="21,123,0,0" Name="basicCanvas" VerticalAlignment="Top" Width="441" Grid.Row="1">
+            <TextBlock Canvas.Left="37" Canvas.Top="24" Height="30" Name="textBlock1" Text="Username" />
+            <TextBlock Canvas.Left="43" Canvas.Top="103" Height="30" Name="textBlock2" Text="Password" />
+            <TextBox Canvas.Left="138" Canvas.Top="6" Height="71" Name="usernameTextBox" Text="" Width="297" />
+            <PasswordBox Canvas.Left="139" Canvas.Top="83" Height="71" Name="passwordTextBox" Width="296" />
+        </Canvas>
     </Grid>
  
     <phone:PhoneApplicationPage.ApplicationBar>

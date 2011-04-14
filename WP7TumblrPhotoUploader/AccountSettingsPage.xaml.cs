@@ -38,5 +38,24 @@ namespace WP7TumblrPhotoUploader
             // Then go back
             NavigationService.GoBack();
         }
+
+        private void Basic_Click(object sender, MouseButtonEventArgs e)
+        {
+            this.oauthCanvas.Visibility = System.Windows.Visibility.Collapsed;
+            this.oauthTextBlock.Foreground = this.Resources["UnselectedOptionBrush"] as Brush;
+
+            this.basicCanvas.Visibility = System.Windows.Visibility.Visible;
+            this.basicTextBlock.Foreground = this.Resources["SelectedOptionBrush"] as Brush;
+            
+        }
+
+        private void OAuth_Click(object sender, MouseButtonEventArgs e)
+        {
+            this.basicCanvas.Visibility = System.Windows.Visibility.Collapsed;
+            this.basicTextBlock.Foreground = this.Resources["UnselectedOptionBrush"] as Brush;
+
+            this.oauthCanvas.Visibility = System.Windows.Visibility.Visible;
+            this.oauthTextBlock.Foreground = this.Resources["SelectedOptionBrush"] as Brush;
+        }
     }
 }
