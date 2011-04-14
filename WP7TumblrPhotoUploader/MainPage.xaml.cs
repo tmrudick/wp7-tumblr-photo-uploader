@@ -47,6 +47,7 @@ namespace WP7TumblrPhotoUploader
                 this.hasDefaultText = false;
                 this.captionTextbox.Text = string.Empty;
                 this.captionTextbox.TextAlignment = TextAlignment.Left;
+                this.captionTextbox.Foreground = this.Resources["DefaultTextBrush"] as Brush;
             }
         }
 
@@ -62,8 +63,8 @@ namespace WP7TumblrPhotoUploader
                 this.hasDefaultText = true;
                 this.captionTextbox.Text = "Enter a Caption...";
                 this.captionTextbox.TextAlignment = TextAlignment.Center;
+                this.captionTextbox.Foreground = this.Resources["InactiveTextBrush"] as Brush;
             }
-
         }
 
         /**
