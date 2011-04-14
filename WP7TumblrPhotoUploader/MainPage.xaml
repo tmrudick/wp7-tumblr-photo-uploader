@@ -32,7 +32,7 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <Image Height="261" HorizontalAlignment="Center" Name="photoPreview" Stretch="None" VerticalAlignment="Top" Width="456" Source="/WP7TumblrPhotoUploader;component/Images/photo_icon.png" Margin="0,70,0,0" MouseLeftButtonDown="photoPreview_MouseLeftButtonDown" />
+            <Image Height="261" HorizontalAlignment="Center" Name="photoPreview" Stretch="None" VerticalAlignment="Top" Width="456" Source="/Images/photo_icon.png" Margin="0,70,0,0" MouseLeftButtonDown="photoPreview_MouseLeftButtonDown" />
             <TextBox Height="262" Margin="0,267,0,6" Name="captionTextbox" Text="Enter a caption..." Foreground="{StaticResource InactiveTextBrush}" TextAlignment="Center" ManipulationStarted="captionTextbox_ManipulationStarted" LostFocus="captionTextbox_LostFocus" />
         </Grid>
     </Grid>
@@ -40,7 +40,7 @@
     <!--Sample code showing usage of ApplicationBar-->
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="post"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar.upload.rest.png" Text="post"/>
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="account settings"/>
             </shell:ApplicationBar.MenuItems>
