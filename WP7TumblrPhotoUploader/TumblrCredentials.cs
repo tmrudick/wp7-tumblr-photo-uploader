@@ -19,7 +19,7 @@ namespace WP7TumblrPhotoUploader
         {
             get
             {
-                if (this.OAuthToken.Equals(string.Empty))
+                if (this.OAuthToken == null)
                 {
                     return CredentialsType.BasicAuth;
                 }
@@ -31,11 +31,17 @@ namespace WP7TumblrPhotoUploader
         }
 
         // Old style username and password
-        private string Username { get; set; }
-        private string Password { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
 
         // New style OAuth this and that
-        private string OAuthToken { get; set; }
-        private string OAuthTokenSecret { get; set; }
+        public string OAuthToken { get; set; }
+        public string OAuthTokenSecret { get; set; }
+
+        public TumblrCredentials()
+        {
+            this.Username = "";
+            this.Password = "";
+        }
     }
 }

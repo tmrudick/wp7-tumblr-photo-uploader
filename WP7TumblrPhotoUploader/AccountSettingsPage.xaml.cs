@@ -10,14 +10,32 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+using System.IO.IsolatedStorage;
 
 namespace WP7TumblrPhotoUploader
 {
     public partial class AccountSettingsPage : PhoneApplicationPage
     {
+        private IsolatedStorageSettings storage = IsolatedStorageSettings.ApplicationSettings;
+        private TumblrCredentials userCredentials;
+
         public AccountSettingsPage()
         {
             InitializeComponent();
+
+            // Load user stuff from isolated storage
+            if (this.storage.Contains("userCredentials"))
+            {
+                this.userCredentials = storage["userCredentials"] as TumblrCredentials;
+            }
+            else
+            {
+                this.userCredentials = new TumblrCredentials();
+            }
+
+            // Update username and password stuff
+            this.usernameTextBox.Text = this.userCredentials.Username;
+            this.passwordTextBox.Password = this.userCredentials.Password;
         }
 
         /**
@@ -34,6 +52,11 @@ namespace WP7TumblrPhotoUploader
         private void Save_Click(object sender, EventArgs e)
         {
             // TODO: Save here
+            this.userCredentials.Username = this.usernameTextBox.Text;
+            this.userCredentials.Password = this.passwordTextBox.Password;
+
+            storage.Remove("userCredentials");
+            storage.Add("userCredentials", this.userCredentials);
 
             // Then go back
             NavigationService.GoBack();
