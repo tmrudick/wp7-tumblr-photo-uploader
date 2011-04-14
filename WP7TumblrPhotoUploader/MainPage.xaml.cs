@@ -13,6 +13,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Tasks;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.IO.IsolatedStorage;
 
 namespace WP7TumblrPhotoUploader
 {
@@ -25,7 +26,7 @@ namespace WP7TumblrPhotoUploader
         private byte[] photo;
 
         private PhotoChooserTask photoChooser;
-        
+
         // Constructor
         public MainPage()
         {
@@ -114,6 +115,29 @@ namespace WP7TumblrPhotoUploader
         private void accountSettings_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/AccountSettingsPage.xaml", UriKind.Relative));
+        }
+
+        /**
+         * Actually post the image... finally.
+         **/
+        private void Post_Click(object sender, EventArgs e)
+        {
+            // Check if we have credentials
+            IsolatedStorageSettings storage = IsolatedStorageSettings.ApplicationSettings;
+
+            // If we have no credentials, force the user to enter their info in account settings.
+            if (!storage.Contains("userCredentials"))
+            {
+                NavigationService.Navigate(new Uri("/AccountSettingsPage.xaml", UriKind.Relative));
+            }
+            else
+            {
+                // Get the credentials
+                TumblrCredentials tumblrCredentials = storage["userCredentials"] as TumblrCredentials;
+
+                // Actually post the image. We have credentials
+
+            }
         }
     }
 }

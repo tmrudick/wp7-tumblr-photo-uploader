@@ -39,7 +39,7 @@
     <!--Sample code showing usage of ApplicationBar-->
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar.upload.rest.png" Text="post"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar.upload.rest.png" Text="post" Click="Post_Click" />
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="account settings" Click="accountSettings_Click" />
             </shell:ApplicationBar.MenuItems>
