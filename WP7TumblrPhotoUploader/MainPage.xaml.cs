@@ -15,6 +15,7 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using System.IO.IsolatedStorage;
 using Hammock;
+using Hammock.Authentication.OAuth;
 
 namespace WP7TumblrPhotoUploader
 {
@@ -153,7 +154,13 @@ namespace WP7TumblrPhotoUploader
                 // Set the correct credentials on the client or request depending on auth method
                 if (userCredentials.Type == TumblrCredentials.CredentialsType.OAuth)
                 {
-                    // TODO: OAuth stuff
+                    OAuthCredentials oAuthCred = new OAuthCredentials();
+                    oAuthCred.ConsumerKey = "";
+                    oAuthCred.ConsumerSecret = "";
+                    oAuthCred.Token = userCredentials.OAuthToken;
+                    oAuthCred.TokenSecret = userCredentials.OAuthTokenSecret;
+
+                    client.Credentials = oAuthCred;
                 }
                 else
                 {
