@@ -14,6 +14,7 @@ using Microsoft.Phone.Tasks;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.IO.IsolatedStorage;
+using Hammock;
 
 namespace WP7TumblrPhotoUploader
 {
@@ -26,6 +27,9 @@ namespace WP7TumblrPhotoUploader
         private byte[] photo;
 
         private PhotoChooserTask photoChooser;
+
+        private const string TUMBLR_AUTHORITY = "http://tumblr.com/api";
+        private const string TUMBLR_POST_PATH = "/write";
 
         // Constructor
         public MainPage()
@@ -133,11 +137,62 @@ namespace WP7TumblrPhotoUploader
             else
             {
                 // Get the credentials
-                TumblrCredentials tumblrCredentials = storage["userCredentials"] as TumblrCredentials;
+                TumblrCredentials userCredentials = storage["userCredentials"] as TumblrCredentials;
 
-                // Actually post the image. We have credentials
+                // Now here comes the POST!
 
+                // Create a RestClient
+                RestClient client = new RestClient();
+                client.Authority = MainPage.TUMBLR_AUTHORITY;
+
+                // Create the request
+                RestRequest request = new RestRequest();
+                request.Path = MainPage.TUMBLR_POST_PATH;
+                request.Method = Hammock.Web.WebMethod.Post;
+
+                // Set the correct credentials on the client or request depending on auth method
+                if (userCredentials.Type == TumblrCredentials.CredentialsType.OAuth)
+                {
+                    // TODO: OAuth stuff
+                }
+                else
+                {
+                    request.AddField("email", userCredentials.Username);
+                    request.AddField("password", userCredentials.Password);
+                }
+
+                // Add metadata fields
+                request.AddField("type", "photo");
+                request.AddField("state", "draft"); // Debug line for testing
+                request.AddField("send-to-twitter", "no"); // Debug line because I'm paranoid
+                
+                // Add caption but check for an empty field
+                if (!this.hasDefaultText)
+                {
+                    request.AddField("caption", this.captionTextbox.Text);
+                }
+
+                // Add the photo but check for an empty photo
+                if (this.photo != null)
+                {
+                    request.AddFile("data", "upload.jpg", new MemoryStream(photo));
+                    // TODO: Some sort of error handling if this condition is not met.
+                    // TODO: This check should probably be done first.
+                }
+
+                // Send the request of to la-la-land
+                client.BeginRequest(request, new RestCallback(PostCompleted));
+
+                // TODO: Add notification of progress
             }
+        }
+
+        /**
+         * ASync callback for posting a new photo
+         **/
+        public void PostCompleted(RestRequest request, RestResponse response, object target)
+        {
+            // TODO: Add notification of completion
         }
     }
 }
