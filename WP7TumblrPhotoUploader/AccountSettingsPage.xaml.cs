@@ -62,7 +62,10 @@ namespace WP7TumblrPhotoUploader
             NavigationService.GoBack();
         }
 
-        private void Basic_Click(object sender, MouseButtonEventArgs e)
+        /**
+         * Hide the OAuth stuff and just show an old-timey username and password box
+         */
+        private void BasicOption_Click(object sender, MouseButtonEventArgs e)
         {
             this.oauthCanvas.Visibility = System.Windows.Visibility.Collapsed;
             this.oauthTextBlock.Foreground = this.Resources["UnselectedOptionBrush"] as Brush;
@@ -72,7 +75,10 @@ namespace WP7TumblrPhotoUploader
             
         }
 
-        private void OAuth_Click(object sender, MouseButtonEventArgs e)
+        /**
+         * Hide the Basic Auth stuff and just show new-timey OAuth settings
+         */
+        private void OAuthOption_Click(object sender, MouseButtonEventArgs e)
         {
             this.basicCanvas.Visibility = System.Windows.Visibility.Collapsed;
             this.basicTextBlock.Foreground = this.Resources["UnselectedOptionBrush"] as Brush;
@@ -80,5 +86,14 @@ namespace WP7TumblrPhotoUploader
             this.oauthCanvas.Visibility = System.Windows.Visibility.Visible;
             this.oauthTextBlock.Foreground = this.Resources["SelectedOptionBrush"] as Brush;
         }
+
+        /**
+         * Being the performance of the classic OAuth fancy authentication dance
+         */
+        private void GetOAuthTokens_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Perform the OAuth Dance
+        }
+
     }
 }
