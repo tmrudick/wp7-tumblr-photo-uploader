@@ -22,9 +22,6 @@ namespace WP7TumblrPhotoUploader
         private IsolatedStorageSettings storage = IsolatedStorageSettings.ApplicationSettings;
         private TumblrCredentials userCredentials;
 
-        private const string OAUTH_CONSUMER_KEY = "ddRwNYFhclqTMDM8VGCUNwlJEEPWQjLWWpYMhrockMaQBKlUiG";
-        private const string OAUTH_CONSUMER_SECRET = "b5V0p8jP8qaiviUttv2aym41S2YiiOkYbzShsqVrUAtkIHTjyH";
-
         private const string OAUTH_AUTHORITY = "http://tumblr.com/oauth";
         private const string OAUTH_REQUEST_TOKEN_PATH = "/request_token";
         private const string OAUTH_AUTH_PATH = "/authorize";
@@ -118,8 +115,8 @@ namespace WP7TumblrPhotoUploader
             oAuthCred.Type = OAuthType.RequestToken;
             oAuthCred.ParameterHandling = OAuthParameterHandling.HttpAuthorizationHeader;
             oAuthCred.SignatureMethod = OAuthSignatureMethod.HmacSha1;
-            oAuthCred.ConsumerKey = AccountSettingsPage.OAUTH_CONSUMER_KEY;
-            oAuthCred.ConsumerSecret = AccountSettingsPage.OAUTH_CONSUMER_SECRET;
+            oAuthCred.ConsumerKey = Common.OAUTH_CONSUMER_KEY;
+            oAuthCred.ConsumerSecret = Common.OAUTH_CONSUMER_SECRET;
 
             client.Credentials = oAuthCred;
 
@@ -132,28 +129,65 @@ namespace WP7TumblrPhotoUploader
          **/
         private void RequestTokenCallback(RestRequest request, RestResponse response, object target)
         {
+            // Parse out the request tokens
             string queryString = response.Content;
-            this.oAuthRequestToken = GetValueFromQueryString(queryString, "oauth_token");
-            this.oAuthRequestSecret = GetValueFromQueryString(queryString, "oauth_token_secret");
+            this.oAuthRequestToken = Common.GetValueFromQueryString(queryString, "oauth_token");
+            this.oAuthRequestSecret = Common.GetValueFromQueryString(queryString, "oauth_token_secret");
+        
+            // Start the web browser with the request token
+            Dispatcher.BeginInvoke(() => NavigationService.Navigate(new Uri("/WebBrowserAuthorizationPage.xaml?oauth_token=" + this.oAuthRequestToken, UriKind.Relative)));
         }
 
         /**
-         * Given a querystring and a field name, return the value of the field
+         * Navigation callback. The web browser will hit this method when it is done authorizing
          **/
-        private string GetValueFromQueryString(string queryString, string field)
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            string[] pairs = queryString.Split('&');
-
-            foreach (string pair in pairs)
+            if (storage.Contains("from_browser"))
             {
-                if (pair.StartsWith(field))
-                {
-                    int equalsIndex = pair.IndexOf('=');
-                    return pair.Substring(equalsIndex + 1);
-                }
+                storage.Remove("from_browser");
+
+                string verifier = storage["oauth_verifier"].ToString();
+                storage.Remove("oauth_verifier");
+
+                // Request the Access Token
+                RestClient client = new RestClient();
+                client.Authority = AccountSettingsPage.OAUTH_AUTHORITY;
+                client.Path = AccountSettingsPage.OAUTH_ACCESS_TOKEN_PATH;
+                client.Method = Hammock.Web.WebMethod.Post;
+                client.HasElevatedPermissions = true;
+
+                // Set up the first set of credentials
+                OAuthCredentials oAuthCred = new OAuthCredentials();
+                oAuthCred.Type = OAuthType.AccessToken;
+                oAuthCred.ParameterHandling = OAuthParameterHandling.HttpAuthorizationHeader;
+                oAuthCred.SignatureMethod = OAuthSignatureMethod.HmacSha1;
+                oAuthCred.ConsumerKey = Common.OAUTH_CONSUMER_KEY;
+                oAuthCred.ConsumerSecret = Common.OAUTH_CONSUMER_SECRET;
+                oAuthCred.Verifier = verifier;
+                oAuthCred.Token = this.oAuthRequestToken;
+                oAuthCred.TokenSecret = this.oAuthRequestSecret;
+
+                client.Credentials = oAuthCred;
+
+                // Perform the async request for the request token
+                client.BeginRequest(new RestCallback(AccessTokenCallback));
+
             }
 
-            return null;
+            base.OnNavigatedTo(e);
+        }
+
+        /**
+         * Called when we finally need the access token!
+         **/
+        public void AccessTokenCallback(RestRequest request, RestResponse response, object target)
+        {
+            string queryString = response.Content;
+
+            // Get the FINAL tokens
+            userCredentials.OAuthToken = Common.GetValueFromQueryString(queryString, "oauth_token");
+            userCredentials.OAuthTokenSecret = Common.GetValueFromQueryString(queryString, "oauth_token_secret");
         }
     }
 }

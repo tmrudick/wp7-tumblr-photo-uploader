@@ -145,6 +145,7 @@ namespace WP7TumblrPhotoUploader
                 // Create a RestClient
                 RestClient client = new RestClient();
                 client.Authority = MainPage.TUMBLR_AUTHORITY;
+                client.HasElevatedPermissions = true;
 
                 // Create the request
                 RestRequest request = new RestRequest();
@@ -155,10 +156,13 @@ namespace WP7TumblrPhotoUploader
                 if (userCredentials.Type == TumblrCredentials.CredentialsType.OAuth)
                 {
                     OAuthCredentials oAuthCred = new OAuthCredentials();
-                    oAuthCred.ConsumerKey = "";
-                    oAuthCred.ConsumerSecret = "";
+                    oAuthCred.ConsumerKey = Common.OAUTH_CONSUMER_KEY;
+                    oAuthCred.ConsumerSecret = Common.OAUTH_CONSUMER_SECRET;
                     oAuthCred.Token = userCredentials.OAuthToken;
                     oAuthCred.TokenSecret = userCredentials.OAuthTokenSecret;
+                    oAuthCred.ParameterHandling = OAuthParameterHandling.HttpAuthorizationHeader;
+                    oAuthCred.SignatureMethod = OAuthSignatureMethod.HmacSha1;
+                    oAuthCred.Type = OAuthType.ProtectedResource;
 
                     client.Credentials = oAuthCred;
                 }
@@ -199,6 +203,7 @@ namespace WP7TumblrPhotoUploader
          **/
         public void PostCompleted(RestRequest request, RestResponse response, object target)
         {
+            return;
             // TODO: Add notification of completion
         }
     }
