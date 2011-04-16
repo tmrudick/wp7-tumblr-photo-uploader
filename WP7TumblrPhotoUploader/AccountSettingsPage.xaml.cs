@@ -11,13 +11,27 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using System.IO.IsolatedStorage;
+using Hammock;
+using Hammock.Authentication.OAuth;
 
 namespace WP7TumblrPhotoUploader
 {
     public partial class AccountSettingsPage : PhoneApplicationPage
     {
+        // userCredentials come out of storage on page load or are created empty if they do not exist
         private IsolatedStorageSettings storage = IsolatedStorageSettings.ApplicationSettings;
         private TumblrCredentials userCredentials;
+
+        private const string OAUTH_CONSUMER_KEY = "ddRwNYFhclqTMDM8VGCUNwlJEEPWQjLWWpYMhrockMaQBKlUiG";
+        private const string OAUTH_CONSUMER_SECRET = "b5V0p8jP8qaiviUttv2aym41S2YiiOkYbzShsqVrUAtkIHTjyH";
+
+        private const string OAUTH_AUTHORITY = "http://tumblr.com/oauth";
+        private const string OAUTH_REQUEST_TOKEN_PATH = "/request_token";
+        private const string OAUTH_AUTH_PATH = "/authorize";
+        private const string OAUTH_ACCESS_TOKEN_PATH = "/access_token";
+
+        private string oAuthRequestToken;
+        private string oAuthRequestSecret;
 
         public AccountSettingsPage()
         {
@@ -92,8 +106,54 @@ namespace WP7TumblrPhotoUploader
          */
         private void GetOAuthTokens_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Perform the OAuth Dance
+            // Create the first client
+            RestClient client = new RestClient();
+            client.Authority = AccountSettingsPage.OAUTH_AUTHORITY;
+            client.Path = AccountSettingsPage.OAUTH_REQUEST_TOKEN_PATH;
+            client.Method = Hammock.Web.WebMethod.Post;
+            client.HasElevatedPermissions = true;
+
+            // Set up the first set of credentials
+            OAuthCredentials oAuthCred = new OAuthCredentials();
+            oAuthCred.Type = OAuthType.RequestToken;
+            oAuthCred.ParameterHandling = OAuthParameterHandling.HttpAuthorizationHeader;
+            oAuthCred.SignatureMethod = OAuthSignatureMethod.HmacSha1;
+            oAuthCred.ConsumerKey = AccountSettingsPage.OAUTH_CONSUMER_KEY;
+            oAuthCred.ConsumerSecret = AccountSettingsPage.OAUTH_CONSUMER_SECRET;
+
+            client.Credentials = oAuthCred;
+
+            // Perform the async request for the request token
+            client.BeginRequest(new RestCallback(RequestTokenCallback));
         }
 
+        /**
+         * Callback for receiving the RequestToken from Tumblr
+         **/
+        private void RequestTokenCallback(RestRequest request, RestResponse response, object target)
+        {
+            string queryString = response.Content;
+            this.oAuthRequestToken = GetValueFromQueryString(queryString, "oauth_token");
+            this.oAuthRequestSecret = GetValueFromQueryString(queryString, "oauth_token_secret");
+        }
+
+        /**
+         * Given a querystring and a field name, return the value of the field
+         **/
+        private string GetValueFromQueryString(string queryString, string field)
+        {
+            string[] pairs = queryString.Split('&');
+
+            foreach (string pair in pairs)
+            {
+                if (pair.StartsWith(field))
+                {
+                    int equalsIndex = pair.IndexOf('=');
+                    return pair.Substring(equalsIndex + 1);
+                }
+            }
+
+            return null;
+        }
     }
 }
