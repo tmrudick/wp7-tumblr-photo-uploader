@@ -24,19 +24,19 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <TextBlock Height="117" HorizontalAlignment="Left" Name="basicTextBlock" Text="Basic" VerticalAlignment="Top" FontSize="80" Width="190" Margin="9,0,0,0" MouseLeftButtonDown="BasicOption_Click" />
+            <TextBlock FontSize="80" Height="117" HorizontalAlignment="Left" Margin="216,0,0,0" Name="oauthTextBlock" Text="OAuth" VerticalAlignment="Top" Width="234" Foreground="#64FFFFFF" MouseLeftButtonDown="OAuthOption_Click" />
+        </Grid>
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock x:Name="PageTitle" Text="account settings" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <TextBlock Height="117" HorizontalAlignment="Left" Name="basicTextBlock" Text="Basic" VerticalAlignment="Top" FontSize="80" Width="190" Margin="9,0,0,0" MouseLeftButtonDown="BasicOption_Click" />
-            <TextBlock FontSize="80" Height="117" HorizontalAlignment="Left" Margin="216,0,0,0" Name="oauthTextBlock" Text="OAuth" VerticalAlignment="Top" Width="234" Foreground="#64FFFFFF" MouseLeftButtonDown="OAuthOption_Click" />
-        </Grid>
-        <Canvas Height="100" Margin="21,123,18,0" Name="oauthCanvas" VerticalAlignment="Top" Grid.Row="1" Visibility="Collapsed">
+        <Canvas Height="234" Margin="21,123,18,0" Name="oauthCanvas" VerticalAlignment="Top" Grid.Row="1" Visibility="Collapsed">
             <Button Canvas.Left="37" Canvas.Top="13" Content="Get OAuth Tokens" Height="87" Name="oAuthButton" Width="382" Click="GetOAuthTokens_Click" />
+            <Button Canvas.Left="37" Canvas.Top="103" Content="Clear Current Tokens" Height="87" Name="oAuthClearButton" Width="382" Click="ClearOAuthTokens_Click" Visibility="Collapsed" />
         </Canvas>
         <Canvas Height="255" HorizontalAlignment="Left" Margin="21,123,0,0" Name="basicCanvas" VerticalAlignment="Top" Width="441" Grid.Row="1">
             <TextBlock Canvas.Left="37" Canvas.Top="24" Height="30" Name="textBlock1" Text="Username" />

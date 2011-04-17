@@ -170,12 +170,10 @@ namespace WP7TumblrPhotoUploader
                     client.AddField("password", userCredentials.Password);
                 }
 
-                
-
                 // Add metadata fields
                 client.AddField("type", "photo");
-                client.AddField("state", "draft"); // Debug line for testing
-                client.AddField("send-to-twitter", "no"); // Debug line because I'm paranoid
+                client.AddField("state", "publish"); // Debug line for testing
+                client.AddField("send-to-twitter", "yes"); // Debug line because I'm paranoid
                 
                 // Add caption but check for an empty field
                 if (!this.hasDefaultText)

@@ -47,6 +47,14 @@ namespace WP7TumblrPhotoUploader
             // Update username and password stuff
             this.usernameTextBox.Text = this.userCredentials.Username;
             this.passwordTextBox.Password = this.userCredentials.Password;
+
+            // If OAuth tokens are present, display the OAuth screen
+            if (this.userCredentials.Type == TumblrCredentials.CredentialsType.OAuth)
+            {
+                // HACK: This is dumb but I don't want to use automation to perform a button click. Consider refactoring.
+                this.OAuthOption_Click(null, null);
+                this.oAuthClearButton.Visibility = System.Windows.Visibility.Visible;
+            }
         }
 
         /**
@@ -188,6 +196,19 @@ namespace WP7TumblrPhotoUploader
             // Get the FINAL tokens
             userCredentials.OAuthToken = Common.GetValueFromQueryString(queryString, "oauth_token");
             userCredentials.OAuthTokenSecret = Common.GetValueFromQueryString(queryString, "oauth_token_secret");
+
+            Dispatcher.BeginInvoke(() => this.oAuthClearButton.Visibility = System.Windows.Visibility.Visible);
+        }
+
+        /**
+         * Clear any existing OAuth tokens
+         **/
+        private void ClearOAuthTokens_Click(object sender, RoutedEventArgs e)
+        {
+            this.userCredentials.OAuthToken = null;
+            this.userCredentials.OAuthTokenSecret = null;
+
+            this.oAuthClearButton.Visibility = System.Windows.Visibility.Collapsed;
         }
     }
 }
