@@ -29,8 +29,8 @@ namespace WP7TumblrPhotoUploader
 
         private PhotoChooserTask photoChooser;
 
-        private const string TUMBLR_AUTHORITY = "http://tumblr.com/api";
-        private const string TUMBLR_POST_PATH = "/write";
+        private const string TUMBLR_AUTHORITY = "http://www.tumblr.com";
+        private const string TUMBLR_POST_PATH = "/api/write";
 
         // Constructor
         public MainPage()
@@ -147,10 +147,8 @@ namespace WP7TumblrPhotoUploader
                 client.Authority = MainPage.TUMBLR_AUTHORITY;
                 client.HasElevatedPermissions = true;
 
-                // Create the request
-                RestRequest request = new RestRequest();
-                request.Path = MainPage.TUMBLR_POST_PATH;
-                request.Method = Hammock.Web.WebMethod.Post;
+                client.Path = MainPage.TUMBLR_POST_PATH;
+                client.Method = Hammock.Web.WebMethod.Post;
 
                 // Set the correct credentials on the client or request depending on auth method
                 if (userCredentials.Type == TumblrCredentials.CredentialsType.OAuth)
@@ -168,31 +166,33 @@ namespace WP7TumblrPhotoUploader
                 }
                 else
                 {
-                    request.AddField("email", userCredentials.Username);
-                    request.AddField("password", userCredentials.Password);
+                    client.AddField("email", userCredentials.Username);
+                    client.AddField("password", userCredentials.Password);
                 }
 
+                
+
                 // Add metadata fields
-                request.AddField("type", "photo");
-                request.AddField("state", "draft"); // Debug line for testing
-                request.AddField("send-to-twitter", "no"); // Debug line because I'm paranoid
+                client.AddField("type", "photo");
+                client.AddField("state", "draft"); // Debug line for testing
+                client.AddField("send-to-twitter", "no"); // Debug line because I'm paranoid
                 
                 // Add caption but check for an empty field
                 if (!this.hasDefaultText)
                 {
-                    request.AddField("caption", this.captionTextbox.Text);
+                    client.AddField("caption", this.captionTextbox.Text);
                 }
 
                 // Add the photo but check for an empty photo
                 if (this.photo != null)
                 {
-                    request.AddFile("data", "upload.jpg", new MemoryStream(photo));
+                    client.AddFile("data", "upload.jpg", new MemoryStream(photo));
                     // TODO: Some sort of error handling if this condition is not met.
                     // TODO: This check should probably be done first.
                 }
 
                 // Send the request of to la-la-land
-                client.BeginRequest(request, new RestCallback(PostCompleted));
+                client.BeginRequest(new RestCallback(PostCompleted));
 
                 // TODO: Add notification of progress
             }
@@ -203,6 +203,9 @@ namespace WP7TumblrPhotoUploader
          **/
         public void PostCompleted(RestRequest request, RestResponse response, object target)
         {
+
+            Dispatcher.BeginInvoke(() => MessageBox.Show(response.Content));
+
             return;
             // TODO: Add notification of completion
         }
