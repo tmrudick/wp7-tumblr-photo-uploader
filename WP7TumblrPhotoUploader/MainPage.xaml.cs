@@ -24,6 +24,9 @@ namespace WP7TumblrPhotoUploader
         // Holds if the caption text box holds the default "Enter Caption" test or not
         private bool hasDefaultText = true;
 
+        // Determines if a post operation is currently ongoing
+        private bool isPosting = false;
+
         // Byte array of the currently selected iamge or null if nothing has been selected
         private byte[] photo;
 
@@ -172,8 +175,8 @@ namespace WP7TumblrPhotoUploader
 
                 // Add metadata fields
                 client.AddField("type", "photo");
-                client.AddField("state", "publish"); // Debug line for testing
-                client.AddField("send-to-twitter", "yes"); // Debug line because I'm paranoid
+                client.AddField("state", "draft"); // Debug line for testing
+                client.AddField("send-to-twitter", "auto"); // Debug line because I'm paranoid
                 
                 // Add caption but check for an empty field
                 if (!this.hasDefaultText)
@@ -192,7 +195,12 @@ namespace WP7TumblrPhotoUploader
                 // Send the request of to la-la-land
                 client.BeginRequest(new RestCallback(PostCompleted));
 
-                // TODO: Add notification of progress
+                this.isPosting = true;
+
+                Dispatcher.BeginInvoke(() => {
+                    this.postProgress.Visibility = System.Windows.Visibility.Visible;
+                    this.captionTextbox.IsEnabled = false;
+                });
             }
         }
 
@@ -201,11 +209,20 @@ namespace WP7TumblrPhotoUploader
          **/
         public void PostCompleted(RestRequest request, RestResponse response, object target)
         {
+            Dispatcher.BeginInvoke(() => this.postProgress.Visibility = System.Windows.Visibility.Collapsed);
+            this.isPosting = false;
 
-            Dispatcher.BeginInvoke(() => MessageBox.Show(response.Content));
-
-            return;
-            // TODO: Add notification of completion
+            if (response.StatusCode == HttpStatusCode.Created)
+            {
+                Dispatcher.BeginInvoke(() => {
+                    MessageBox.Show("Photo Posted Successfully!");
+                    this.captionTextbox.IsEnabled = true;
+                });
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(() => MessageBox.Show("Error Posting Photo: " + response.Content));
+            }
         }
     }
 }
