@@ -182,7 +182,7 @@ namespace WP7TumblrPhotoUploader
 
                     // Add metadata fields
                     client.AddField("type", "photo");
-                    client.AddField("state", "draft"); // Debug line for testing
+                    //client.AddField("state", "draft"); // Debug line for testing
                     client.AddField("send-to-twitter", "auto"); // Debug line because I'm paranoid
 
                     // Add caption but check for an empty field
