@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.0">
-  <App xmlns="" ProductID="{6f0fa691-a332-48cc-9b0a-ac45893626fa}" Title="WP7TumblrPhotoUploader" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="WP7TumblrPhotoUploader author" Description="Sample description" Publisher="WP7TumblrPhotoUploader">
+  <App xmlns="" ProductID="{6f0fa691-a332-48cc-9b0a-ac45893626fa}" Title="WP7TumblrPhotoUploader" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="Tom Rudick" Description="Simple Tumblr Photo Uploader" Publisher="Monadics">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_GAMERSERVICES"/>
@@ -24,7 +24,7 @@
         <TemplateType5>
           <BackgroundImageURI IsRelative="true" IsResource="false">Background.png</BackgroundImageURI>
           <Count>0</Count>
-          <Title>WP7TumblrPhotoUploader</Title>
+          <Title>Tumblr Post</Title>
         </TemplateType5>
       </PrimaryToken>
     </Tokens>
