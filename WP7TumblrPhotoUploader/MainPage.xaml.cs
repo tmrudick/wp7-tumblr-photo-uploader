@@ -81,7 +81,10 @@ namespace WP7TumblrPhotoUploader
          **/
         private void photoPreview_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            this.photoChooser.Show();
+            if (!this.isPosting) // Don't allow a new photo to be selected if we are posting
+            {
+                this.photoChooser.Show();
+            }
         }
 
         /**
@@ -217,6 +220,19 @@ namespace WP7TumblrPhotoUploader
                 Dispatcher.BeginInvoke(() => {
                     MessageBox.Show("Photo Posted Successfully!");
                     this.captionTextbox.IsEnabled = true;
+                    
+                    // Reset photo and caption
+                    this.hasDefaultText = true;
+                    this.captionTextbox.Text = "Enter a Caption...";
+                    this.captionTextbox.TextAlignment = TextAlignment.Center;
+                    this.captionTextbox.Foreground = this.Resources["InactiveTextBrush"] as Brush;
+
+                    this.photo = null;
+                    this.photoPreview.Source = new BitmapImage(new Uri("/Images/photo_icon.png", UriKind.Relative));
+                    this.photoPreview.Stretch = Stretch.None;
+                    this.photoPreview.SetValue(Canvas.MarginProperty, new Thickness(9, 69, 6, 0));
+
+                    
                 });
             }
             else
