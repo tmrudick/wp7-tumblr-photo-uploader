@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.IO.IsolatedStorage;
 using Hammock;
 using Hammock.Authentication.OAuth;
+using Microsoft.Phone.Shell;
 
 namespace WP7TumblrPhotoUploader
 {
@@ -146,64 +147,69 @@ namespace WP7TumblrPhotoUploader
                 // Get the credentials
                 TumblrCredentials userCredentials = storage["userCredentials"] as TumblrCredentials;
 
-                // Now here comes the POST!
-
-                // Create a RestClient
-                RestClient client = new RestClient();
-                client.Authority = MainPage.TUMBLR_AUTHORITY;
-                client.HasElevatedPermissions = true;
-
-                client.Path = MainPage.TUMBLR_POST_PATH;
-                client.Method = Hammock.Web.WebMethod.Post;
-
-                // Set the correct credentials on the client or request depending on auth method
-                if (userCredentials.Type == TumblrCredentials.CredentialsType.OAuth)
+                // We have credentials, do we have a photo?
+                if (photo != null)
                 {
-                    OAuthCredentials oAuthCred = new OAuthCredentials();
-                    oAuthCred.ConsumerKey = Common.OAUTH_CONSUMER_KEY;
-                    oAuthCred.ConsumerSecret = Common.OAUTH_CONSUMER_SECRET;
-                    oAuthCred.Token = userCredentials.OAuthToken;
-                    oAuthCred.TokenSecret = userCredentials.OAuthTokenSecret;
-                    oAuthCred.ParameterHandling = OAuthParameterHandling.HttpAuthorizationHeader;
-                    oAuthCred.SignatureMethod = OAuthSignatureMethod.HmacSha1;
-                    oAuthCred.Type = OAuthType.ProtectedResource;
+                    // Now here comes the POST!
 
-                    client.Credentials = oAuthCred;
+                    // Create a RestClient
+                    RestClient client = new RestClient();
+                    client.Authority = MainPage.TUMBLR_AUTHORITY;
+                    client.HasElevatedPermissions = true;
+
+                    client.Path = MainPage.TUMBLR_POST_PATH;
+                    client.Method = Hammock.Web.WebMethod.Post;
+
+                    // Set the correct credentials on the client or request depending on auth method
+                    if (userCredentials.Type == TumblrCredentials.CredentialsType.OAuth)
+                    {
+                        OAuthCredentials oAuthCred = new OAuthCredentials();
+                        oAuthCred.ConsumerKey = Common.OAUTH_CONSUMER_KEY;
+                        oAuthCred.ConsumerSecret = Common.OAUTH_CONSUMER_SECRET;
+                        oAuthCred.Token = userCredentials.OAuthToken;
+                        oAuthCred.TokenSecret = userCredentials.OAuthTokenSecret;
+                        oAuthCred.ParameterHandling = OAuthParameterHandling.HttpAuthorizationHeader;
+                        oAuthCred.SignatureMethod = OAuthSignatureMethod.HmacSha1;
+                        oAuthCred.Type = OAuthType.ProtectedResource;
+
+                        client.Credentials = oAuthCred;
+                    }
+                    else
+                    {
+                        client.AddField("email", userCredentials.Username);
+                        client.AddField("password", userCredentials.Password);
+                    }
+
+                    // Add metadata fields
+                    client.AddField("type", "photo");
+                    client.AddField("state", "draft"); // Debug line for testing
+                    client.AddField("send-to-twitter", "auto"); // Debug line because I'm paranoid
+
+                    // Add caption but check for an empty field
+                    if (!this.hasDefaultText)
+                    {
+                        client.AddField("caption", this.captionTextbox.Text);
+                    }
+
+                    client.AddFile("data", "upload.jpg", new MemoryStream(photo));
+
+                    // Send the request of to la-la-land
+                    client.BeginRequest(new RestCallback(PostCompleted));
+
+                    this.isPosting = true;
+                    // HACK: Well this is hacky...
+                    Dispatcher.BeginInvoke(() => ((ApplicationBarIconButton)ApplicationBar.Buttons[0]).IsEnabled = false);
+
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        this.postProgress.Visibility = System.Windows.Visibility.Visible;
+                        this.captionTextbox.IsEnabled = false;
+                    });
                 }
                 else
                 {
-                    client.AddField("email", userCredentials.Username);
-                    client.AddField("password", userCredentials.Password);
+                    Dispatcher.BeginInvoke(() => MessageBox.Show("Please Select a Photo."));
                 }
-
-                // Add metadata fields
-                client.AddField("type", "photo");
-                client.AddField("state", "draft"); // Debug line for testing
-                client.AddField("send-to-twitter", "auto"); // Debug line because I'm paranoid
-                
-                // Add caption but check for an empty field
-                if (!this.hasDefaultText)
-                {
-                    client.AddField("caption", this.captionTextbox.Text);
-                }
-
-                // Add the photo but check for an empty photo
-                if (this.photo != null)
-                {
-                    client.AddFile("data", "upload.jpg", new MemoryStream(photo));
-                    // TODO: Some sort of error handling if this condition is not met.
-                    // TODO: This check should probably be done first.
-                }
-
-                // Send the request of to la-la-land
-                client.BeginRequest(new RestCallback(PostCompleted));
-
-                this.isPosting = true;
-
-                Dispatcher.BeginInvoke(() => {
-                    this.postProgress.Visibility = System.Windows.Visibility.Visible;
-                    this.captionTextbox.IsEnabled = false;
-                });
             }
         }
 
@@ -214,6 +220,8 @@ namespace WP7TumblrPhotoUploader
         {
             Dispatcher.BeginInvoke(() => this.postProgress.Visibility = System.Windows.Visibility.Collapsed);
             this.isPosting = false;
+            // HACK: This is kind of hacky...
+            Dispatcher.BeginInvoke(() => ((ApplicationBarIconButton)ApplicationBar.Buttons[0]).IsEnabled = true);
 
             if (response.StatusCode == HttpStatusCode.Created)
             {
@@ -231,8 +239,6 @@ namespace WP7TumblrPhotoUploader
                     this.photoPreview.Source = new BitmapImage(new Uri("/Images/photo_icon.png", UriKind.Relative));
                     this.photoPreview.Stretch = Stretch.None;
                     this.photoPreview.SetValue(Canvas.MarginProperty, new Thickness(9, 69, 6, 0));
-
-                    
                 });
             }
             else
