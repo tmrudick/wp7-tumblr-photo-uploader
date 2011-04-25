@@ -204,6 +204,7 @@ namespace WP7TumblrPhotoUploader
                     {
                         this.postProgress.Visibility = System.Windows.Visibility.Visible;
                         this.captionTextbox.IsEnabled = false;
+                        this.postProgress.Focus();
                     });
                 }
                 else
@@ -243,7 +244,10 @@ namespace WP7TumblrPhotoUploader
             }
             else
             {
-                Dispatcher.BeginInvoke(() => MessageBox.Show("Error Posting Photo: " + response.Content));
+                Dispatcher.BeginInvoke(() => {
+                    MessageBox.Show("Error Posting Photo: " + response.Content);
+                    this.captionTextbox.IsEnabled = true; // Re-enable the text box
+                });
             }
         }
     }
